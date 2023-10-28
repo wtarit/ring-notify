@@ -1,0 +1,19 @@
+name = "ringnotify-api"
+main = "src/index.ts"
+compatibility_date = "2023-10-28"
+
+# [vars]
+# MY_VARIABLE = "production_value"
+
+[[kv_namespaces]]
+binding = "rnapi"
+id = "d682958d2fb94efea37f99d784ab58dd"
+
+# [[r2_buckets]]
+# binding = "MY_BUCKET"
+# bucket_name = "my-bucket"
+
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "my-database"
+# database_id = ""
