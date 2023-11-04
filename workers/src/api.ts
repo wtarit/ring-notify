@@ -29,11 +29,11 @@ api.post("/call", async (c) => {
         message: {
           token: c.get("fcmkey"),
           data: data,
+          android: {priority:"HIGH"}
         },
       }),
     }
   );
-  // console.log(await c.env.rnapi.get("test"));
   return c.json({ status: "success" });
 });
 
