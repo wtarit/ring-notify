@@ -6,7 +6,6 @@ import Config from 'react-native-config';
 import {TextInput} from 'react-native-paper';
 import Clipboard from '@react-native-clipboard/clipboard';
 import ScreenWrapper from './ScreenWrapper';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 function HomeScreen() {
   const [apiKey, setApiKey] = useState('');
@@ -43,8 +42,8 @@ function HomeScreen() {
   };
 
   return (
-    <ScreenWrapper style={styles.default}>
-      <View>
+    <ScreenWrapper>
+      <View style={styles.default}>
         <TextInput
           label={'Your API Key:'}
           mode="outlined"

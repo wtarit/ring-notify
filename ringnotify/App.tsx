@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {SafeAreaView, StatusBar, useColorScheme} from 'react-native';
+import {useColorScheme} from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
@@ -16,7 +16,7 @@ import {
 } from 'react-native-paper';
 import RNCallKeep from 'react-native-callkeep';
 
-import Incomingvideocall from './src/utils/incoming-video-call';
+import Incomingvideocall from './src/utils/incomingCall';
 import HomeScreen from './src/screens/HomeScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 

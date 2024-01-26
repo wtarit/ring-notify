@@ -8,9 +8,11 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import { useTheme } from 'react-native-paper';
+import {useTheme, customText} from 'react-native-paper';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+
+const Text = customText<'customVariant'>();
 
 type Props = ScrollViewProps & {
   children: React.ReactNode;
@@ -21,7 +23,7 @@ type Props = ScrollViewProps & {
 
 export default function ScreenWrapper({
   children,
-  withScrollView = true,
+  withScrollView = false,
   style,
   contentContainerStyle,
   ...rest
@@ -29,6 +31,21 @@ export default function ScreenWrapper({
   const theme = useTheme();
 
   const insets = useSafeAreaInsets();
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    appbar: {
+      backgroundColor: theme.colors.elevation.level5,
+      padding: 10,
+    },
+    title: {
+      textAlign: "center",
+      color: theme.colors.onSecondaryContainer,
+    }
+  
+  });
 
   const containerStyle = [
     styles.container,
@@ -49,19 +66,17 @@ export default function ScreenWrapper({
           keyboardShouldPersistTaps="always"
           alwaysBounceVertical={false}
           showsVerticalScrollIndicator={false}
-          style={[containerStyle, style]}
-        >
+          style={[containerStyle, style]}>
           {children}
         </ScrollView>
       ) : (
-        <View style={[containerStyle, style]}>{children}</View>
+        <View style={[containerStyle, style]}>
+          <View style={styles.appbar}>
+            <Text style={styles.title} variant='titleLarge'>Home</Text>
+          </View>
+          {children}
+        </View>
       )}
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
