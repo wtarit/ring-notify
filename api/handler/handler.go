@@ -1,14 +1,18 @@
 package handler
 
 import (
+	"api/configs"
 	"api/notify"
 	"api/user"
+
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
-func InitEcho() *echo.Echo {
+func Init() *echo.Echo {
+	configs.InitFirebase()
+
 	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World")
@@ -19,6 +23,6 @@ func InitEcho() *echo.Echo {
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	e := InitEcho()
+	e := Init()
 	e.ServeHTTP(w, r)
 }
