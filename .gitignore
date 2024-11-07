@@ -204,3 +204,4 @@ yarn-error.log
 **/tmp
 
 google-services.json
+firebase-adminsdk.json
