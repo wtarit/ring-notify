@@ -1,19 +1,17 @@
 package user
 
 import (
-	"fmt"
+	"api/configs"
+	"api/models"
 	"net/http"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 type CreateUserRequest struct {
 	FcmToken string `query:"fcmToken"`
-}
-
-type User struct {
-	UserId string `json:"userId"`
-	Name   string `json:"name"`
 }
 
 func CreateUser(c echo.Context) error {
@@ -22,10 +20,14 @@ func CreateUser(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, "Bad Request")
 	}
-	fmt.Printf("id: %s\n", reqBody.FcmToken)
-	u := &User{
-		UserId: "test",
-		Name:   "Test",
+	db := configs.DB()
+	u := models.User{
+		ID:            uuid.New(),
+		APIKey:        uuid.NewString(),
+		FCMKey:        reqBody.FcmToken,
+		UserCreated:   time.Now(),
+		FCMKeyUpdated: time.Now(),
 	}
-	return c.JSON(http.StatusOK, u)
+	db.Create(&u)
+	return c.JSON(http.StatusCreated, u)
 }

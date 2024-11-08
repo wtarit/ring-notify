@@ -2,11 +2,12 @@ package notify
 
 import (
 	"api/configs"
+	"api/models"
 	"context"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
+	"strings"
 
 	"firebase.google.com/go/v4/messaging"
 	"github.com/labstack/echo/v4"
@@ -23,9 +24,13 @@ func Call(c echo.Context) error {
 	if err != nil {
 		log.Fatalf("error getting Messaging client: %v\n", err)
 	}
-
+	apikey := strings.Split(c.Request().Header.Get("Authorization"), " ")[1]
+	fmt.Printf("Authorization header: %s\n", apikey)
+	db := configs.DB()
 	// This registration token comes from the client FCM SDKs.
-	registrationToken := os.Getenv("TMP_CLIENT")
+	var user models.User
+	db.First(&user, "api_key = ?", apikey)
+	registrationToken := user.FCMKey
 
 	// See documentation on defining a message payload.
 	message := &messaging.Message{
