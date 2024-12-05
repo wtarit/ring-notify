@@ -6,15 +6,15 @@ import (
 	"api/user"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if err := godotenv.Load(); err != nil && !os.IsNotExist(err) {
+		log.Fatalln("Error loading .env")
 	}
 
 	configs.InitFirebase()
