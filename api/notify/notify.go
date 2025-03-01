@@ -17,6 +17,10 @@ type CallRequest struct {
 	Text string `json:"text"`
 }
 
+type ErrorResponse struct {
+	Reason string `json:"reason"`
+}
+
 func Call(c echo.Context) error {
 	// Obtain a messaging.Client from the App.
 	ctx := context.Background()
@@ -47,7 +51,10 @@ func Call(c echo.Context) error {
 	// registration token.
 	response, err := client.Send(ctx, message)
 	if err != nil {
-		log.Fatalln(err)
+		log.Printf("FCM error: %v\n", err)
+		return c.JSON(http.StatusForbidden, &ErrorResponse{
+			Reason: "Token no longer valid",
+		})
 	}
 	// Response is a message ID string.
 	fmt.Println("Successfully sent message:", response)
