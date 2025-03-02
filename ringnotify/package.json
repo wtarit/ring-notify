@@ -14,7 +14,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@config-plugins/react-native-callkeep": "^9.0.0",
+    "@config-plugins/react-native-callkeep": "https://github.com/wtarit/config-plugins/releases/download/v0.0.1/config-plugins-react-native-callkeep-9.0.0.tgz",
     "@expo/vector-icons": "^14.0.2",
     "@react-native-firebase/app": "^21.6.1",
     "@react-native-firebase/messaging": "^21.6.1",
