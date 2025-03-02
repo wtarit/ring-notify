@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
@@ -21,6 +22,7 @@ func main() {
 	configs.InitDatabase()
 
 	e := echo.New()
+	e.Validator = &user.CustomValidator{Validator: validator.New()}
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World")
 	})
