@@ -7,7 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    // "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
@@ -37,7 +36,8 @@
       ],
       "@react-native-firebase/app",
       "@react-native-firebase/messaging",
-      "@config-plugins/react-native-callkeep"
+      "@config-plugins/react-native-callkeep",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
