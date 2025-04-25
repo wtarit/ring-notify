@@ -1,9 +1,19 @@
 import { useEffect, useState } from "react";
-import { Text, View, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  StatusBar,
+  Linking,
+} from "react-native";
 import messaging from "@react-native-firebase/messaging";
 import CallScreen from "@/lib/callscreen";
 import { createUser, testCall, getStoredApiKey } from "@/lib/api";
-import * as Clipboard from 'expo-clipboard';
+import * as Clipboard from "expo-clipboard";
 
 export default function Index() {
   const [apiKey, setApiKey] = useState<string>("");
@@ -15,7 +25,7 @@ export default function Index() {
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage((remoteMessage) => {
-      if (remoteMessage.data && typeof remoteMessage.data.text === 'string') {
+      if (remoteMessage.data && typeof remoteMessage.data.text === "string") {
         console.log("foreground call");
         CallScreen.displayIncomingCall(remoteMessage.data.text);
       }
@@ -81,10 +91,15 @@ export default function Index() {
     Alert.alert("Success", "API Key copied to clipboard");
   };
 
+  const openDocumentation = () => {
+    Linking.openURL("https://ringnotify.wtarit.me/");
+  };
+
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <Text style={styles.title}>Ring Notify</Text>
-      
+
       <View style={styles.apiKeyContainer}>
         <Text style={styles.label}>Your API Key:</Text>
         <View style={styles.inputContainer}>
@@ -112,6 +127,8 @@ export default function Index() {
           onPress={handleTestCall}
           disabled={isLoading}
         />
+        <View style={styles.spacer} />
+        <Button title="View Documentation" onPress={openDocumentation} />
       </View>
     </View>
   );
@@ -121,13 +138,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
+    paddingTop: StatusBar.currentHeight || 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   apiKeyContainer: {
     marginBottom: 20,
@@ -137,25 +155,25 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 4,
     padding: 10,
     marginRight: 10,
   },
   copyButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     padding: 10,
     borderRadius: 4,
   },
   copyButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
   },
   buttonContainer: {
     marginTop: 20,
