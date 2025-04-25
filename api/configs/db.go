@@ -1,6 +1,7 @@
 package configs
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -17,6 +18,7 @@ func InitDatabase() {
 	if err != nil {
 		log.Fatalf("error connecting to database: %v \n", err)
 	}
+	fmt.Println("Done connecting to DB.")
 }
 
 func DB() *gorm.DB {

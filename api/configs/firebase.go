@@ -2,6 +2,7 @@ package configs
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -20,4 +21,5 @@ func InitFirebase() {
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)
 	}
+	fmt.Println("Done configuring firebase.")
 }
