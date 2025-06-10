@@ -203,5 +203,8 @@ yarn-error.log
 
 **/tmp
 
+# mkdocs build output
+/docs/site
+
 google-services.json
 firebase-adminsdk.json
