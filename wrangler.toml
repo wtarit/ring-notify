@@ -1,0 +1,4 @@
+#: schema https://unpkg.com/wrangler@4.19.1/config-schema.json
+# Configuration for documentation deployment on Cloudflare Workers
+name="ring-notify"
+compatibility_date = "2025-06-10"
