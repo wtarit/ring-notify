@@ -2,10 +2,9 @@
 
 Ring Notify is an Android application (with iOS support coming soon) that allows users to send notifications to mobile phones and alert users via the phone call screen.
 
-<div style="display: flex; justify-content: space-around;">
-  <img src="img/screenshots/ringNotifyMainPage.jpg" alt="App Main Page" style="width: 45%;">
-  <img src="img/screenshots/callInScreen.jpg" alt="Call In Screen" style="width: 45%;">
-</div>
+| App Main Page                                            | Incoming Notification                                      |
+| -------------------------------------------------------- | ---------------------------------------------------------- |
+| ![App Main Page](img/screenshots/ringNotifyMainPage.jpg) | ![Incoming Notification](img/screenshots/callInScreen.jpg) |
 
 ## Features
 
