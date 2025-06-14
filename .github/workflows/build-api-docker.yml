@@ -1,5 +1,10 @@
 name: Build Backend API Docker Image
 on: [push]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ring-notify-backend
+
 jobs:
   build-and-push-image:
     runs-on: ubuntu-24.04
