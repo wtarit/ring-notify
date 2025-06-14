@@ -3,7 +3,7 @@ on: [push]
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ring-notify-backend
+  IMAGE_NAME: wtarit/ring-notify-backend
 
 jobs:
   build-and-push-image:
