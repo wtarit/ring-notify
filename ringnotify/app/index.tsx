@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+    color: "#000",
   },
   apiKeyContainer: {
     marginBottom: 20,
@@ -153,6 +154,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 8,
+    color: "#000",
   },
   inputContainer: {
     flexDirection: "row",
@@ -165,6 +167,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 10,
     marginRight: 10,
+    color: "#000",
   },
   copyButton: {
     backgroundColor: "#007AFF",
