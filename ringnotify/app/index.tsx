@@ -10,7 +10,11 @@ import {
   StatusBar,
   Linking,
 } from "react-native";
-import { getMessaging, onMessage } from "@react-native-firebase/messaging";
+import {
+  getMessaging,
+  getToken,
+  onMessage,
+} from "@react-native-firebase/messaging";
 import CallScreen from "@/lib/callscreen";
 import { createUser, testCall, getStoredApiKey } from "@/lib/api";
 import * as Clipboard from "expo-clipboard";
@@ -46,7 +50,7 @@ export default function Index() {
       }
 
       try {
-        const token = await messaging.getToken();
+        const token = await getToken(messaging);
         console.log("FCM Token:", token);
         const newApiKey = await createUser(token);
         setApiKey(newApiKey);
@@ -62,7 +66,7 @@ export default function Index() {
   const handleRegenerateApiKey = async () => {
     try {
       setIsLoading(true);
-      const token = await messaging.getToken();
+      const token = await getToken(messaging);
       const newApiKey = await createUser(token);
       setApiKey(newApiKey);
       Alert.alert("Success", "API Key regenerated successfully");
