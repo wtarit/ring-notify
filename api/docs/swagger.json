@@ -1,0 +1,207 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API Specification for Ring Notify app.",
+        "title": "Ring Notify API",
+        "contact": {},
+        "version": "0.0.1"
+    },
+    "paths": {
+        "/": {
+            "get": {
+                "description": "Get the status of the API",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthcheck"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.HealthCheckResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/notify/call": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Send a Firebase Cloud Messaging notification to trigger a call",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notify"
+                ],
+                "summary": "Send FCM notification call",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer your-api-key-here",
+                        "description": "Bearer token (API Key)",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Call request payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/notify.CallRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Called",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/notify.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/create": {
+            "post": {
+                "description": "Create a new user with FCM token and get API key",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create a new user",
+                "parameters": [
+                    {
+                        "description": "User creation request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.CreateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/user.CreateUserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.HealthCheckResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "active"
+                }
+            }
+        },
+        "notify.CallRequest": {
+            "type": "object",
+            "required": [
+                "text"
+            ],
+            "properties": {
+                "text": {
+                    "type": "string",
+                    "example": "Notification from ESP32"
+                }
+            }
+        },
+        "notify.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "reason": {
+                    "type": "string",
+                    "example": "Token no longer valid"
+                }
+            }
+        },
+        "user.CreateUserRequest": {
+            "type": "object",
+            "required": [
+                "fcmToken"
+            ],
+            "properties": {
+                "fcmToken": {
+                    "type": "string",
+                    "example": "fcm-token"
+                }
+            }
+        },
+        "user.CreateUserResponse": {
+            "type": "object",
+            "properties": {
+                "apiKey": {
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
+                },
+                "fcmKey": {
+                    "type": "string",
+                    "example": "fcm-token-example"
+                },
+                "fcmKeyUpdated": {
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
+                },
+                "userCreated": {
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

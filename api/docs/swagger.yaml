@@ -1,0 +1,137 @@
+definitions:
+  models.HealthCheckResponse:
+    properties:
+      status:
+        example: active
+        type: string
+    type: object
+  notify.CallRequest:
+    properties:
+      text:
+        example: Notification from ESP32
+        type: string
+    required:
+    - text
+    type: object
+  notify.ErrorResponse:
+    properties:
+      reason:
+        example: Token no longer valid
+        type: string
+    type: object
+  user.CreateUserRequest:
+    properties:
+      fcmToken:
+        example: fcm-token
+        type: string
+    required:
+    - fcmToken
+    type: object
+  user.CreateUserResponse:
+    properties:
+      apiKey:
+        example: 00000000-0000-0000-0000-000000000000
+        type: string
+      fcmKey:
+        example: fcm-token-example
+        type: string
+      fcmKeyUpdated:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      id:
+        example: 00000000-0000-0000-0000-000000000000
+        type: string
+      userCreated:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API Specification for Ring Notify app.
+  title: Ring Notify API
+  version: 0.0.1
+paths:
+  /:
+    get:
+      description: Get the status of the API
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.HealthCheckResponse'
+      summary: Health check
+      tags:
+      - healthcheck
+  /notify/call:
+    post:
+      consumes:
+      - application/json
+      description: Send a Firebase Cloud Messaging notification to trigger a call
+      parameters:
+      - default: Bearer your-api-key-here
+        description: Bearer token (API Key)
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Call request payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/notify.CallRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Called
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/notify.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Send FCM notification call
+      tags:
+      - notify
+  /user/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with FCM token and get API key
+      parameters:
+      - description: User creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.CreateUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Create a new user
+      tags:
+      - user
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
