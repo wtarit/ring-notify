@@ -1,15 +1,22 @@
-import 'expo-router/entry'
+import "expo-router/entry";
 
-import messaging from '@react-native-firebase/messaging'
-import { router } from 'expo-router'
-import { callHandler } from './lib/fcm';
-import { AppRegistry } from 'react-native';
+import {
+  getMessaging,
+  setBackgroundMessageHandler,
+} from "@react-native-firebase/messaging";
+import { callHandler } from "./lib/fcm";
+import { AppRegistry } from "react-native";
 
 console.log("registering");
-messaging().setBackgroundMessageHandler(callHandler);
+const messaging = getMessaging();
+setBackgroundMessageHandler(messaging, callHandler);
 
-AppRegistry.registerHeadlessTask('RNCallKeepBackgroundMessage', () => ({ name, callUUID, handle }) => {
-  // Make your call here
-  
-  return Promise.resolve();
-});
+AppRegistry.registerHeadlessTask(
+  "RNCallKeepBackgroundMessage",
+  () =>
+    ({ name, callUUID, handle }) => {
+      // Make your call here
+
+      return Promise.resolve();
+    }
+);

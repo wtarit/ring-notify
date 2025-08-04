@@ -10,7 +10,11 @@ import {
   StatusBar,
   Linking,
 } from "react-native";
-import messaging from "@react-native-firebase/messaging";
+import {
+  getMessaging,
+  getToken,
+  onMessage,
+} from "@react-native-firebase/messaging";
 import CallScreen from "@/lib/callscreen";
 import { createUser, testCall, getStoredApiKey } from "@/lib/api";
 import * as Clipboard from "expo-clipboard";
@@ -18,13 +22,14 @@ import * as Clipboard from "expo-clipboard";
 export default function Index() {
   const [apiKey, setApiKey] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const messaging = getMessaging();
 
   useEffect(() => {
     CallScreen.setupCallKeep();
   }, []);
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage((remoteMessage) => {
+    const unsubscribe = onMessage(messaging, (remoteMessage) => {
       if (remoteMessage.data && typeof remoteMessage.data.text === "string") {
         console.log("foreground call");
         CallScreen.displayIncomingCall(remoteMessage.data.text);
@@ -45,7 +50,7 @@ export default function Index() {
       }
 
       try {
-        const token = await messaging().getToken();
+        const token = await getToken(messaging);
         console.log("FCM Token:", token);
         const newApiKey = await createUser(token);
         setApiKey(newApiKey);
@@ -61,7 +66,7 @@ export default function Index() {
   const handleRegenerateApiKey = async () => {
     try {
       setIsLoading(true);
-      const token = await messaging().getToken();
+      const token = await getToken(messaging);
       const newApiKey = await createUser(token);
       setApiKey(newApiKey);
       Alert.alert("Success", "API Key regenerated successfully");
@@ -146,6 +151,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+    color: "#000",
   },
   apiKeyContainer: {
     marginBottom: 20,
@@ -153,6 +159,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 8,
+    color: "#000",
   },
   inputContainer: {
     flexDirection: "row",
@@ -165,6 +172,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 10,
     marginRight: 10,
+    color: "#000",
   },
   copyButton: {
     backgroundColor: "#007AFF",
