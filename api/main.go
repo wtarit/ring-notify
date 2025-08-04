@@ -2,9 +2,10 @@ package main
 
 import (
 	"api/configs"
+	"api/handler"
 	"api/models"
 	"api/notify"
-	"api/user"
+	"api/router"
 	"log"
 	"net/http"
 	"os"
@@ -35,14 +36,15 @@ func main() {
 	configs.InitDatabase()
 
 	e := echo.New()
-	e.Validator = &user.CustomValidator{Validator: validator.New()}
+	e.Validator = &handler.CustomValidator{Validator: validator.New()}
 
 	e.GET("/", healthCheck)
 	e.POST("/notify/call", notify.Call)
-	e.POST("/user/create", user.CreateUser)
 
 	// Swagger endpoint
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
+
+	router.InitRoute(e)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

@@ -1,18 +1,20 @@
-package user
+package handler
 
 import (
 	"api/configs"
 	"api/models"
+	"api/service"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 type (
+	UserHandler struct {
+		service *service.UserService
+	}
 	CreateUserRequest struct {
 		FcmToken string `json:"fcmToken" validate:"required" example:"fcm-token"`
 	}
@@ -27,6 +29,10 @@ type (
 		Validator *validator.Validate
 	}
 )
+
+func NewUserHandler() *UserHandler {
+	return &UserHandler{service: service.NewUserService()}
+}
 
 func (cv *CustomValidator) Validate(i interface{}) error {
 	if err := cv.Validator.Struct(i); err != nil {
@@ -47,7 +53,7 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 //	@Success		201		{object}	CreateUserResponse
 //	@Failure		400		{string}	string	"Bad Request"
 //	@Router			/user/create [post]
-func CreateUser(c echo.Context) error {
+func (h *UserHandler) CreateUser(c echo.Context) error {
 	var reqBody CreateUserRequest
 	err := c.Bind(&reqBody)
 	if err != nil {
@@ -56,19 +62,11 @@ func CreateUser(c echo.Context) error {
 	if err = c.Validate(reqBody); err != nil {
 		return err
 	}
-	db := configs.DB()
-	u := models.User{
-		ID:            uuid.New(),
-		APIKey:        uuid.NewString(),
-		FCMKey:        reqBody.FcmToken,
-		UserCreated:   time.Now(),
-		FCMKeyUpdated: time.Now(),
-	}
-	db.Create(&u)
+	u := h.service.CreateUser(reqBody.FcmToken)
 	return c.JSON(http.StatusCreated, u)
 }
 
-func RefreshToken(c echo.Context) {
+func (h *UserHandler) RefreshToken(c echo.Context) {
 	apikey := strings.Split(c.Request().Header.Get("Authorization"), " ")[1]
 	db := configs.DB()
 	var user models.User
