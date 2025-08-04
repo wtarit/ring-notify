@@ -28,7 +28,7 @@ import (
 
 func main() {
 	if err := godotenv.Load(); err != nil && !os.IsNotExist(err) {
-	log.Fatalln("Error loading .env")
+		log.Fatalln("Error loading .env")
 	}
 
 	configs.InitFirebase()

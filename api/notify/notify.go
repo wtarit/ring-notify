@@ -13,13 +13,27 @@ import (
 )
 
 type CallRequest struct {
-	Text string `json:"text"`
+	Text string `json:"text" validate:"required" example:"Notification from ESP32"`
 }
 
 type ErrorResponse struct {
-	Reason string `json:"reason"`
+	Reason string `json:"reason" example:"Token no longer valid"`
 }
 
+// Call godoc
+//
+//	@Summary		Send FCM notification call
+//	@Description	Send a Firebase Cloud Messaging notification to trigger a call
+//	@Tags			notify
+//	@Accept			json
+//	@Produce		json
+//	@Param			Authorization	header		string		true	"Bearer token (API Key)"	default(Bearer your-api-key-here)
+//	@Param			request			body		CallRequest	true	"Call request payload"
+//	@Success		200				{string}	string		"Called"
+//	@Failure		400				{string}	string		"Bad Request"
+//	@Failure		403				{object}	ErrorResponse
+//	@Security		BearerAuth
+//	@Router			/notify/call [post]
 func Call(c echo.Context) error {
 	var callRequest CallRequest
 	err := c.Bind(&callRequest)

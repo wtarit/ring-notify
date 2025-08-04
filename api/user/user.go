@@ -14,7 +14,14 @@ import (
 
 type (
 	CreateUserRequest struct {
-		FcmToken string `json:"fcmToken" validate:"required"`
+		FcmToken string `json:"fcmToken" validate:"required" example:"fcm-token"`
+	}
+	CreateUserResponse struct {
+		ID            string `json:"id" example:"00000000-0000-0000-0000-000000000000"`
+		APIKey        string `json:"apiKey" example:"00000000-0000-0000-0000-000000000000"`
+		FCMKey        string `json:"fcmKey" example:"fcm-token-example"`
+		UserCreated   string `json:"userCreated" example:"2025-01-01T00:00:00Z"`
+		FCMKeyUpdated string `json:"fcmKeyUpdated" example:"2025-01-01T00:00:00Z"`
 	}
 	CustomValidator struct {
 		Validator *validator.Validate
@@ -29,6 +36,17 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 	return nil
 }
 
+// CreateUser godoc
+//
+//	@Summary		Create a new user
+//	@Description	Create a new user with FCM token and get API key
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		CreateUserRequest	true	"User creation request"
+//	@Success		201		{object}	CreateUserResponse
+//	@Failure		400		{string}	string	"Bad Request"
+//	@Router			/user/create [post]
 func CreateUser(c echo.Context) error {
 	var reqBody CreateUserRequest
 	err := c.Bind(&reqBody)
