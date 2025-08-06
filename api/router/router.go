@@ -8,6 +8,9 @@ import (
 
 func InitRoute(e *echo.Echo) {
 	userHandler := handler.NewUserHandler()
+	notifyHandler := handler.NewNotifyHandler()
 
 	e.POST("/user/create", userHandler.CreateUser)
+
+	e.POST("/notify/call", notifyHandler.Call)
 }

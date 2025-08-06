@@ -4,7 +4,6 @@ import (
 	"api/configs"
 	"api/handler"
 	"api/models"
-	"api/notify"
 	"api/router"
 	"log"
 	"net/http"
@@ -39,7 +38,6 @@ func main() {
 	e.Validator = &handler.CustomValidator{Validator: validator.New()}
 
 	e.GET("/", healthCheck)
-	e.POST("/notify/call", notify.Call)
 
 	// Swagger endpoint
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
