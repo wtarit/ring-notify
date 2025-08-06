@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"api/models"
 	"api/service"
 	"net/http"
 	"strings"
@@ -10,14 +11,6 @@ import (
 
 type NotifyHandler struct {
 	service *service.NotifyService
-}
-
-type CallRequest struct {
-	Text string `json:"text" validate:"required" example:"Notification from ESP32"`
-}
-
-type ErrorResponse struct {
-	Reason string `json:"reason" example:"Token no longer valid"`
 }
 
 func NewNotifyHandler() *NotifyHandler {
@@ -41,7 +34,7 @@ func NewNotifyHandler() *NotifyHandler {
 //	@Security		BearerAuth
 //	@Router			/notify/call [post]
 func (h *NotifyHandler) Call(c echo.Context) error {
-	var callRequest CallRequest
+	var callRequest models.CallRequest
 	err := c.Bind(&callRequest)
 	if err != nil {
 		return c.String(http.StatusBadRequest, "Bad Request")
@@ -49,7 +42,7 @@ func (h *NotifyHandler) Call(c echo.Context) error {
 	apiKey := strings.Split(c.Request().Header.Get("Authorization"), " ")[1]
 	err = h.service.Notify(apiKey, callRequest.Text)
 	if err != nil {
-		return c.JSON(http.StatusForbidden, &ErrorResponse{
+		return c.JSON(http.StatusForbidden, &models.ErrorResponse{
 			Reason: "Error",
 		})
 	}
