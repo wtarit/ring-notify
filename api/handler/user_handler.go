@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
@@ -15,21 +14,10 @@ type (
 	UserHandler struct {
 		service *service.UserService
 	}
-	CustomValidator struct {
-		Validator *validator.Validate
-	}
 )
 
 func NewUserHandler() *UserHandler {
 	return &UserHandler{service: service.NewUserService()}
-}
-
-func (cv *CustomValidator) Validate(i interface{}) error {
-	if err := cv.Validator.Struct(i); err != nil {
-		// Optionally, you could return the error to give each route more control over the status code
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-	return nil
 }
 
 // CreateUser godoc
@@ -45,12 +33,11 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 //	@Router			/user/create [post]
 func (h *UserHandler) CreateUser(c echo.Context) error {
 	var reqBody models.CreateUserRequest
-	err := c.Bind(&reqBody)
-	if err != nil {
-		return c.String(http.StatusBadRequest, "Bad Request")
+	if err := c.Bind(&reqBody); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"status": err.Error()})
 	}
-	if err = c.Validate(reqBody); err != nil {
-		return err
+	if err := c.Validate(reqBody); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"status": "400err"})
 	}
 	u := h.service.CreateUser(reqBody.FcmToken)
 	return c.JSON(http.StatusCreated, u)

@@ -2,9 +2,9 @@ package main
 
 import (
 	"api/configs"
-	"api/handler"
 	"api/models"
 	"api/router"
+	"api/util"
 	"log"
 	"net/http"
 	"os"
@@ -16,6 +16,14 @@ import (
 
 	_ "api/docs" // This line is necessary for go-swagger to find your docs!
 )
+
+type CustomValidator struct {
+	Validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.Validator.Struct(i)
+}
 
 //	@title			Ring Notify API
 //	@version		0.0.1
@@ -35,7 +43,8 @@ func main() {
 	configs.InitDatabase()
 
 	e := echo.New()
-	e.Validator = &handler.CustomValidator{Validator: validator.New()}
+	e.Validator = &CustomValidator{Validator: validator.New()}
+	e.Binder = &util.CustomBinder{}
 
 	e.GET("/", healthCheck)
 
