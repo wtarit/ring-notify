@@ -2,7 +2,6 @@ package service
 
 import (
 	"api/configs"
-	"api/models"
 	"context"
 	"errors"
 	"log"
@@ -16,7 +15,7 @@ func NewNotifyService() *NotifyService {
 	return &NotifyService{}
 }
 
-func (s *NotifyService) Notify(apiKey string, notificationText string) error {
+func (s *NotifyService) Notify(fcmKey string, notificationText string) error {
 	// Obtain a messaging.Client from the App.
 	ctx := context.Background()
 	client, err := configs.App.Messaging(ctx)
@@ -24,18 +23,12 @@ func (s *NotifyService) Notify(apiKey string, notificationText string) error {
 		log.Fatalf("error getting Messaging client: %v\n", err)
 	}
 
-	db := configs.DB()
-	// This registration token comes from the client FCM SDKs.
-	var user models.User
-	db.First(&user, "api_key = ?", apiKey)
-	registrationToken := user.FCMKey
-
 	// See documentation on defining a message payload.
 	message := &messaging.Message{
 		Data: map[string]string{
 			"text": notificationText,
 		},
-		Token: registrationToken,
+		Token: fcmKey,
 		Android: &messaging.AndroidConfig{
 			Priority: "high",
 		},

@@ -1,10 +1,10 @@
 package handler
 
 import (
+	"api/configs"
 	"api/models"
 	"api/service"
 	"net/http"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -39,8 +39,15 @@ func (h *NotifyHandler) Call(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, "Bad Request")
 	}
-	apiKey := strings.Split(c.Request().Header.Get("Authorization"), " ")[1]
-	err = h.service.Notify(apiKey, callRequest.Text)
+	apiKey := c.Get("uuid")
+
+	db := configs.DB()
+	// This registration token comes from the client FCM SDKs.
+	var user models.User
+	db.First(&user, "api_key = ?", apiKey)
+	registrationToken := user.FCMKey
+
+	err = h.service.Notify(registrationToken, callRequest.Text)
 	if err != nil {
 		return c.JSON(http.StatusForbidden, &models.ErrorResponse{
 			Reason: "Error",

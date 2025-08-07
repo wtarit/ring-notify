@@ -2,6 +2,7 @@ package router
 
 import (
 	"api/handler"
+	"api/middleware"
 
 	"github.com/labstack/echo/v4"
 )
@@ -12,5 +13,7 @@ func InitRoute(e *echo.Echo) {
 
 	e.POST("/user/create", userHandler.CreateUser)
 
-	e.POST("/notify/call", notifyHandler.Call)
+	notifyGroup := e.Group("/notify")
+	notifyGroup.Use(middleware.AuthMiddleware)
+	notifyGroup.POST("/call", notifyHandler.Call)
 }
