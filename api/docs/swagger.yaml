@@ -1,11 +1,11 @@
 definitions:
-  models.HealthCheckResponse:
+  models.BadRequestResponse:
     properties:
-      status:
-        example: active
+      error:
+        example: Bad Request
         type: string
     type: object
-  notify.CallRequest:
+  models.CallRequest:
     properties:
       text:
         example: Notification from ESP32
@@ -13,13 +13,7 @@ definitions:
     required:
     - text
     type: object
-  notify.ErrorResponse:
-    properties:
-      reason:
-        example: Token no longer valid
-        type: string
-    type: object
-  user.CreateUserRequest:
+  models.CreateUserRequest:
     properties:
       fcmToken:
         example: fcm-token
@@ -27,7 +21,7 @@ definitions:
     required:
     - fcmToken
     type: object
-  user.CreateUserResponse:
+  models.CreateUserResponse:
     properties:
       apiKey:
         example: 00000000-0000-0000-0000-000000000000
@@ -43,6 +37,23 @@ definitions:
         type: string
       userCreated:
         example: "2025-01-01T00:00:00Z"
+        type: string
+    type: object
+  models.HealthCheckResponse:
+    properties:
+      status:
+        example: active
+        type: string
+    type: object
+  models.NotifyErrorResponse:
+    properties:
+      reason:
+        example: Token no longer valid
+        type: string
+    type: object
+  models.SuccessResponse:
+    properties:
+      message:
         type: string
     type: object
 info:
@@ -81,22 +92,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/notify.CallRequest'
+          $ref: '#/definitions/models.CallRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Called
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/models.SuccessResponse'
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/models.BadRequestResponse'
         "403":
           description: Forbidden
           schema:
-            $ref: '#/definitions/notify.ErrorResponse'
+            $ref: '#/definitions/models.NotifyErrorResponse'
       security:
       - BearerAuth: []
       summary: Send FCM notification call
@@ -113,18 +124,18 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/user.CreateUserRequest'
+          $ref: '#/definitions/models.CreateUserRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/user.CreateUserResponse'
+            $ref: '#/definitions/models.CreateUserResponse'
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/models.BadRequestResponse'
       summary: Create a new user
       tags:
       - user

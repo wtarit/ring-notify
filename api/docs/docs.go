@@ -68,27 +68,27 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/notify.CallRequest"
+                            "$ref": "#/definitions/models.CallRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Called",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.SuccessResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.BadRequestResponse"
                         }
                     },
                     "403": {
                         "description": "Forbidden",
                         "schema": {
-                            "$ref": "#/definitions/notify.ErrorResponse"
+                            "$ref": "#/definitions/models.NotifyErrorResponse"
                         }
                     }
                 }
@@ -114,7 +114,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.CreateUserRequest"
+                            "$ref": "#/definitions/models.CreateUserRequest"
                         }
                     }
                 ],
@@ -122,13 +122,13 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/user.CreateUserResponse"
+                            "$ref": "#/definitions/models.CreateUserResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.BadRequestResponse"
                         }
                     }
                 }
@@ -136,16 +136,16 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.HealthCheckResponse": {
+        "models.BadRequestResponse": {
             "type": "object",
             "properties": {
-                "status": {
+                "error": {
                     "type": "string",
-                    "example": "active"
+                    "example": "Bad Request"
                 }
             }
         },
-        "notify.CallRequest": {
+        "models.CallRequest": {
             "type": "object",
             "required": [
                 "text"
@@ -157,16 +157,7 @@ const docTemplate = `{
                 }
             }
         },
-        "notify.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "reason": {
-                    "type": "string",
-                    "example": "Token no longer valid"
-                }
-            }
-        },
-        "user.CreateUserRequest": {
+        "models.CreateUserRequest": {
             "type": "object",
             "required": [
                 "fcmToken"
@@ -178,7 +169,7 @@ const docTemplate = `{
                 }
             }
         },
-        "user.CreateUserResponse": {
+        "models.CreateUserResponse": {
             "type": "object",
             "properties": {
                 "apiKey": {
@@ -200,6 +191,32 @@ const docTemplate = `{
                 "userCreated": {
                     "type": "string",
                     "example": "2025-01-01T00:00:00Z"
+                }
+            }
+        },
+        "models.HealthCheckResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "active"
+                }
+            }
+        },
+        "models.NotifyErrorResponse": {
+            "type": "object",
+            "properties": {
+                "reason": {
+                    "type": "string",
+                    "example": "Token no longer valid"
+                }
+            }
+        },
+        "models.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         }

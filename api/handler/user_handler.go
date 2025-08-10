@@ -27,17 +27,17 @@ func NewUserHandler() *UserHandler {
 //	@Tags			user
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body		CreateUserRequest	true	"User creation request"
-//	@Success		201		{object}	CreateUserResponse
-//	@Failure		400		{string}	string	"Bad Request"
+//	@Param			request	body		models.CreateUserRequest	true	"User creation request"
+//	@Success		201		{object}	models.CreateUserResponse
+//	@Failure		400		{object}	models.BadRequestResponse
 //	@Router			/user/create [post]
 func (h *UserHandler) CreateUser(c echo.Context) error {
 	var reqBody models.CreateUserRequest
 	if err := c.Bind(&reqBody); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"status": err.Error()})
+		return c.JSON(http.StatusBadRequest, models.NewErrorResponse(err.Error()))
 	}
 	if err := c.Validate(reqBody); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"status": "400err"})
+		return c.JSON(http.StatusBadRequest, models.NewErrorResponse("Validation failed"))
 	}
 	u := h.service.CreateUser(reqBody.FcmToken)
 	return c.JSON(http.StatusCreated, u)

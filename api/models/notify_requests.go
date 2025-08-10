@@ -4,6 +4,6 @@ type CallRequest struct {
 	Text string `json:"text" validate:"required" example:"Notification from ESP32"`
 }
 
-type ErrorResponse struct {
+type NotifyErrorResponse struct {
 	Reason string `json:"reason" example:"Token no longer valid"`
 }
