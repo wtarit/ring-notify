@@ -1,6 +1,9 @@
 package middleware
 
 import (
+	"api/configs"
+	"api/models"
+	"log"
 	"net/http"
 	"strings"
 
@@ -25,7 +28,16 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid token format")
 		}
-		c.Set("uuid", tokenUUID)
+		db := configs.DB()
+		var user models.User
+		result := db.First(&user, "api_key = ?", tokenUUID)
+		if result.Error != nil {
+			log.Println(result.Error.Error())
+			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid Token")
+		}
+
+		// Store user in context
+		c.Set("user", &user)
 		return next(c)
 	}
 }

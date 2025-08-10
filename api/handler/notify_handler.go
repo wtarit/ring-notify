@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"api/configs"
+	"api/ctxutil"
 	"api/models"
 	"api/service"
 	"net/http"
@@ -39,12 +39,8 @@ func (h *NotifyHandler) Call(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, "Bad Request")
 	}
-	apiKey := c.Get("uuid")
+	user := ctxutil.GetUser(c)
 
-	db := configs.DB()
-	// This registration token comes from the client FCM SDKs.
-	var user models.User
-	db.First(&user, "api_key = ?", apiKey)
 	registrationToken := user.FCMKey
 
 	err = h.service.Notify(registrationToken, callRequest.Text)
