@@ -1,11 +1,10 @@
 package handler
 
 import (
-	"api/configs"
 	"api/models"
 	"api/service"
 	"net/http"
-	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -30,7 +29,7 @@ func NewUserHandler() *UserHandler {
 //	@Param			request	body		models.CreateUserRequest	true	"User creation request"
 //	@Success		201		{object}	models.CreateUserResponse
 //	@Failure		400		{object}	models.BadRequestResponse
-//	@Router			/user/create [post]
+//	@Router			/user [post]
 func (h *UserHandler) CreateUser(c echo.Context) error {
 	var reqBody models.CreateUserRequest
 	if err := c.Bind(&reqBody); err != nil {
@@ -40,12 +39,12 @@ func (h *UserHandler) CreateUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, models.NewErrorResponse("Validation failed"))
 	}
 	u := h.service.CreateUser(reqBody.FcmToken)
-	return c.JSON(http.StatusCreated, u)
-}
-
-func (h *UserHandler) RefreshToken(c echo.Context) {
-	apikey := strings.Split(c.Request().Header.Get("Authorization"), " ")[1]
-	db := configs.DB()
-	var user models.User
-	db.First(&user, "api_key = ?", apikey)
+	resp := models.CreateUserResponse{
+		ID:            u.ID.String(),
+		APIKey:        u.APIKey,
+		FCMKey:        u.FCMKey,
+		UserCreated:   u.UserCreated.Format(time.RFC3339),
+		FCMKeyUpdated: u.FCMKeyUpdated.Format(time.RFC3339),
+	}
+	return c.JSON(http.StatusCreated, resp)
 }

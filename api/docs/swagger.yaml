@@ -104,8 +104,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/models.BadRequestResponse'
-        "403":
-          description: Forbidden
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/models.NotifyErrorResponse'
       security:
@@ -113,7 +113,7 @@ paths:
       summary: Send FCM notification call
       tags:
       - notify
-  /user/create:
+  /user:
     post:
       consumes:
       - application/json

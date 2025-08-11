@@ -85,8 +85,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.BadRequestResponse"
                         }
                     },
-                    "403": {
-                        "description": "Forbidden",
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.NotifyErrorResponse"
                         }
@@ -94,7 +94,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/create": {
+        "/user": {
             "post": {
                 "description": "Create a new user with FCM token and get API key",
                 "consumes": [
