@@ -15,5 +15,7 @@ func main() {
 	}
 	configs.InitDatabase()
 	db := configs.DB()
-	db.AutoMigrate(&models.User{})
+	if err := db.AutoMigrate(&models.User{}); err != nil {
+		log.Fatalf("error auto migrating database: %v\n", err)
+	}
 }
