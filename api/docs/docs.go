@@ -133,6 +133,43 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/api-key": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Regenerates the API key for the authenticated user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Regenerate API key",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateUserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.BadRequestResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.BadRequestResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -175,10 +212,6 @@ const docTemplate = `{
                 "apiKey": {
                     "type": "string",
                     "example": "00000000-0000-0000-0000-000000000000"
-                },
-                "fcmKey": {
-                    "type": "string",
-                    "example": "fcm-token-example"
                 },
                 "fcmKeyUpdated": {
                     "type": "string",

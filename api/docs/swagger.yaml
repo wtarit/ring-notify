@@ -26,9 +26,6 @@ definitions:
       apiKey:
         example: 00000000-0000-0000-0000-000000000000
         type: string
-      fcmKey:
-        example: fcm-token-example
-        type: string
       fcmKeyUpdated:
         example: "2025-01-01T00:00:00Z"
         type: string
@@ -137,6 +134,29 @@ paths:
           schema:
             $ref: '#/definitions/models.BadRequestResponse'
       summary: Create a new user
+      tags:
+      - user
+  /user/api-key:
+    post:
+      description: Regenerates the API key for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CreateUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+      security:
+      - BearerAuth: []
+      summary: Regenerate API key
       tags:
       - user
 securityDefinitions:

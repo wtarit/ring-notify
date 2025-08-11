@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"api/ctxutil"
 	"api/models"
 	"api/service"
 	"net/http"
@@ -42,9 +43,37 @@ func (h *UserHandler) CreateUser(c echo.Context) error {
 	resp := models.CreateUserResponse{
 		ID:            u.ID.String(),
 		APIKey:        u.APIKey,
-		FCMKey:        u.FCMKey,
 		UserCreated:   u.UserCreated.Format(time.RFC3339),
 		FCMKeyUpdated: u.FCMKeyUpdated.Format(time.RFC3339),
 	}
 	return c.JSON(http.StatusCreated, resp)
+}
+
+// RegenerateAPIKey godoc
+//
+//	@Summary      Regenerate API key
+//	@Description  Regenerates the API key for the authenticated user
+//	@Tags         user
+//	@Produce      json
+//	@Success      200  {object}  models.CreateUserResponse
+//	@Failure      400  {object}  models.BadRequestResponse
+//	@Failure      401  {object}  models.BadRequestResponse
+//	@Security     BearerAuth
+//	@Router       /user/api-key [post]
+func (h *UserHandler) RegenerateAPIKey(c echo.Context) error {
+	user := ctxutil.GetUser(c)
+	if user == nil {
+		return c.JSON(http.StatusUnauthorized, models.NewErrorResponse("Unauthorized"))
+	}
+	updated, err := h.service.RegenerateAPIKey(user.ID)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, models.NewErrorResponse("Failed to regenerate API key"))
+	}
+	resp := models.CreateUserResponse{
+		ID:            updated.ID.String(),
+		APIKey:        updated.APIKey,
+		UserCreated:   updated.UserCreated.Format(time.RFC3339),
+		FCMKeyUpdated: updated.FCMKeyUpdated.Format(time.RFC3339),
+	}
+	return c.JSON(http.StatusOK, resp)
 }

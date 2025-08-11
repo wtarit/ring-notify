@@ -11,7 +11,8 @@ func InitRoute(e *echo.Echo) {
 	userHandler := handler.NewUserHandler()
 	notifyHandler := handler.NewNotifyHandler()
 
-	e.POST("/user/create", userHandler.CreateUser)
+	e.POST("/user", userHandler.CreateUser)
+	e.POST("/user/api-key", userHandler.RegenerateAPIKey, middleware.AuthMiddleware)
 
 	notifyGroup := e.Group("/notify")
 	notifyGroup.Use(middleware.AuthMiddleware)

@@ -26,7 +26,7 @@ func NewNotifyHandler() *NotifyHandler {
 //	@Tags			notify
 //	@Accept			json
 //	@Produce		json
-//	@Param			Authorization	header		string		true	"Bearer token (API Key)"	default(Bearer your-api-key-here)
+//	@Param			Authorization	header		string				true	"Bearer token (API Key)"	default(Bearer your-api-key-here)
 //	@Param			request			body		models.CallRequest	true	"Call request payload"
 //	@Success		200				{object}	models.SuccessResponse
 //	@Failure		400				{object}	models.BadRequestResponse
