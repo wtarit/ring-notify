@@ -8,14 +8,9 @@ import (
 )
 
 func InitRoute(e *echo.Echo) {
-	userHandler := handler.NewUserHandler()
 	deviceHandler := handler.NewDeviceHandler()
 	apiKeyHandler := handler.NewAPIKeyHandler()
 	notifyHandler := handler.NewNotifyHandler()
-
-	// User routes - anonymous user creation and API key regeneration
-	e.POST("/users", userHandler.CreateUser)
-	e.POST("/users/api-key", userHandler.RegenerateAPIKey, middleware.APIKeyAuthMiddleware)
 
 	// Notify routes - requires API key authentication
 	notifyGroup := e.Group("/notify")
