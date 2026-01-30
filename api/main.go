@@ -41,6 +41,7 @@ func main() {
 
 	configs.InitFirebase()
 	configs.InitDatabase()
+	configs.InitSupabase()
 
 	e := echo.New()
 	e.Validator = &CustomValidator{Validator: validator.New()}

@@ -5,7 +5,6 @@ import (
 	"api/models"
 	"api/service"
 	"net/http"
-	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -23,14 +22,14 @@ func NewUserHandler() *UserHandler {
 // CreateUser godoc
 //
 //	@Summary		Create a new user
-//	@Description	Create a new user with FCM token and get API key
-//	@Tags			user
+//	@Description	Create a new anonymous user with FCM token and get API key
+//	@Tags			users
 //	@Accept			json
 //	@Produce		json
 //	@Param			request	body		models.CreateUserRequest	true	"User creation request"
 //	@Success		201		{object}	models.CreateUserResponse
 //	@Failure		400		{object}	models.BadRequestResponse
-//	@Router			/user [post]
+//	@Router			/users [post]
 func (h *UserHandler) CreateUser(c echo.Context) error {
 	var reqBody models.CreateUserRequest
 	if err := c.Bind(&reqBody); err != nil {
@@ -39,12 +38,15 @@ func (h *UserHandler) CreateUser(c echo.Context) error {
 	if err := c.Validate(reqBody); err != nil {
 		return c.JSON(http.StatusBadRequest, models.NewErrorResponse("Validation failed"))
 	}
-	u := h.service.CreateUser(reqBody.FcmToken)
+
+	result := h.service.CreateUser(reqBody.FcmToken)
+	if result == nil {
+		return c.JSON(http.StatusInternalServerError, models.NewErrorResponse("Failed to create user"))
+	}
+
 	resp := models.CreateUserResponse{
-		ID:            u.ID.String(),
-		APIKey:        u.APIKey,
-		UserCreated:   u.UserCreated.Format(time.RFC3339),
-		FCMKeyUpdated: u.FCMKeyUpdated.Format(time.RFC3339),
+		ID:     result.User.ID.String(),
+		APIKey: result.APIKey,
 	}
 	return c.JSON(http.StatusCreated, resp)
 }
@@ -52,28 +54,28 @@ func (h *UserHandler) CreateUser(c echo.Context) error {
 // RegenerateAPIKey godoc
 //
 //	@Summary      Regenerate API key
-//	@Description  Regenerates the API key for the authenticated user
-//	@Tags         user
+//	@Description  Regenerates the API key for the authenticated user (creates new, deactivates old)
+//	@Tags         users
 //	@Produce      json
 //	@Success      200  {object}  models.CreateUserResponse
 //	@Failure      400  {object}  models.BadRequestResponse
 //	@Failure      401  {object}  models.BadRequestResponse
 //	@Security     BearerAuth
-//	@Router       /user/api-key [post]
+//	@Router       /users/api-key [post]
 func (h *UserHandler) RegenerateAPIKey(c echo.Context) error {
 	user := ctxutil.GetUser(c)
 	if user == nil {
 		return c.JSON(http.StatusUnauthorized, models.NewErrorResponse("Unauthorized"))
 	}
-	updated, err := h.service.RegenerateAPIKey(user.ID)
+
+	newAPIKey, err := h.service.RegenerateAPIKey(user.ID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, models.NewErrorResponse("Failed to regenerate API key"))
 	}
+
 	resp := models.CreateUserResponse{
-		ID:            updated.ID.String(),
-		APIKey:        updated.APIKey,
-		UserCreated:   updated.UserCreated.Format(time.RFC3339),
-		FCMKeyUpdated: updated.FCMKeyUpdated.Format(time.RFC3339),
+		ID:     user.ID.String(),
+		APIKey: newAPIKey,
 	}
 	return c.JSON(http.StatusOK, resp)
 }
