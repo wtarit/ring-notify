@@ -1,15 +1,12 @@
 package ctxutil
 
 import (
-	"api/models"
-
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
-func GetUser(c echo.Context) *models.User {
-	user, ok := c.Get("user").(*models.User)
-	if !ok {
-		return nil
-	}
-	return user
+// GetSupabaseUserID extracts the Supabase user ID from the Echo context
+func GetSupabaseUserID(c echo.Context) uuid.UUID {
+	userID, _ := c.Get("supabase_user_id").(uuid.UUID)
+	return userID
 }

@@ -41,7 +41,9 @@ func main() {
 
 	configs.InitFirebase()
 	configs.InitDatabase()
-	configs.InitSupabase()
+	if err := configs.InitSupabase(); err != nil {
+		log.Fatalf("Failed to initialize Supabase: %v", err)
+	}
 
 	e := echo.New()
 	e.Validator = &CustomValidator{Validator: validator.New()}

@@ -22,7 +22,7 @@ func main() {
 
 	// Auto-migrate all models
 	fmt.Println("Creating/updating tables...")
-	if err := db.AutoMigrate(&models.User{}, &models.Device{}, &models.APIKey{}); err != nil {
+	if err := db.AutoMigrate(&models.Device{}, &models.APIKey{}); err != nil {
 		log.Fatalf("error auto migrating database: %v\n", err)
 	}
 
