@@ -20,6 +20,7 @@
     "react-router": "7.12.0"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.22.1",
     "@react-router/dev": "7.12.0",
     "@tailwindcss/vite": "^4.1.13",
     "@types/node": "^22",
@@ -29,6 +30,7 @@
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "wrangler": "^4.61.1"
   }
 }
