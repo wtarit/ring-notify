@@ -56,7 +56,7 @@ func (s *APIKeyService) CreateAPIKey(supabaseUserID uuid.UUID, name string, expi
 func (s *APIKeyService) ListAPIKeys(supabaseUserID uuid.UUID) ([]models.APIKey, error) {
 	db := configs.DB()
 	var apiKeys []models.APIKey
-	err := db.Where("supabase_user_id = ?", supabaseUserID).Order("created_at DESC").Find(&apiKeys).Error
+	err := db.Where("user_id = ?", supabaseUserID).Order("created_at DESC").Find(&apiKeys).Error
 
 	// Mask the keys in list view for security
 	for i := range apiKeys {

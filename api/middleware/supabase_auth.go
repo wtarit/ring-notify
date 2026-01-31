@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jwt"
@@ -50,8 +51,13 @@ func SupabaseAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing sub claim")
 		}
 
+		parsedID, err := uuid.Parse(sub)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid sub claim")
+		}
+
 		// Store Supabase user ID in context
-		c.Set("supabase_user_id", sub)
+		c.Set("supabase_user_id", parsedID)
 		c.Set("auth_type", "supabase")
 
 		return next(c)

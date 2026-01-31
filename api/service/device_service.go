@@ -58,7 +58,7 @@ func (s *DeviceService) RegisterDevice(supabaseUserID uuid.UUID, fcmToken, devic
 func (s *DeviceService) ListDevices(supabaseUserID uuid.UUID) ([]models.Device, error) {
 	db := configs.DB()
 	var devices []models.Device
-	err := db.Where("supabase_user_id = ?", supabaseUserID).Order("registered_at DESC").Find(&devices).Error
+	err := db.Where("user_id = ?", supabaseUserID).Order("registered_at DESC").Find(&devices).Error
 	return devices, err
 }
 
