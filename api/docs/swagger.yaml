@@ -1,11 +1,51 @@
 definitions:
-  models.HealthCheckResponse:
+  handler.NotifyMultipleResponse:
     properties:
-      status:
-        example: active
+      failureCount:
+        type: integer
+      message:
+        type: string
+      successCount:
+        type: integer
+    type: object
+  models.APIKeyListResponse:
+    properties:
+      apiKeys:
+        items:
+          $ref: '#/definitions/models.APIKeyResponse'
+        type: array
+    type: object
+  models.APIKeyResponse:
+    properties:
+      createdAt:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      expiresAt:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      isActive:
+        example: true
+        type: boolean
+      key:
+        example: 550e8400-e29b-41d4-a716-446655440002
+        type: string
+      lastUsedAt:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      name:
+        example: ESP32 Doorbell
         type: string
     type: object
-  notify.CallRequest:
+  models.BadRequestResponse:
+    properties:
+      error:
+        example: Bad Request
+        type: string
+    type: object
+  models.CallRequest:
     properties:
       text:
         example: Notification from ESP32
@@ -13,36 +53,85 @@ definitions:
     required:
     - text
     type: object
-  notify.ErrorResponse:
+  models.CreateAPIKeyRequest:
+    properties:
+      expiresAt:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      name:
+        example: ESP32 Doorbell
+        type: string
+    required:
+    - name
+    type: object
+  models.DeviceListResponse:
+    properties:
+      devices:
+        items:
+          $ref: '#/definitions/models.DeviceResponse'
+        type: array
+    type: object
+  models.DeviceResponse:
+    properties:
+      deviceName:
+        example: My Phone
+        type: string
+      deviceType:
+        example: android
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      isActive:
+        example: true
+        type: boolean
+      lastActive:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      registeredAt:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    type: object
+  models.HealthCheckResponse:
+    properties:
+      status:
+        example: active
+        type: string
+    type: object
+  models.NotifyErrorResponse:
     properties:
       reason:
         example: Token no longer valid
         type: string
     type: object
-  user.CreateUserRequest:
+  models.RegisterDeviceRequest:
     properties:
+      deviceName:
+        example: My Phone
+        type: string
+      deviceType:
+        example: android
+        type: string
       fcmToken:
-        example: fcm-token
-        type: string
-    required:
-    - fcmToken
-    type: object
-  user.CreateUserResponse:
-    properties:
-      apiKey:
-        example: 00000000-0000-0000-0000-000000000000
-        type: string
-      fcmKey:
         example: fcm-token-example
         type: string
-      fcmKeyUpdated:
-        example: "2025-01-01T00:00:00Z"
+    required:
+    - deviceName
+    - deviceType
+    - fcmToken
+    type: object
+  models.SuccessResponse:
+    properties:
+      message:
         type: string
-      id:
-        example: 00000000-0000-0000-0000-000000000000
+    type: object
+  models.UpdateDeviceRequest:
+    properties:
+      deviceName:
+        example: My Updated Phone
         type: string
-      userCreated:
-        example: "2025-01-01T00:00:00Z"
+      fcmToken:
+        example: new-fcm-token
         type: string
     type: object
 info:
@@ -64,11 +153,247 @@ paths:
       summary: Health check
       tags:
       - healthcheck
+  /api-keys:
+    get:
+      description: Get a list of all API keys for the authenticated user (keys are
+        masked)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIKeyListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+      security:
+      - BearerAuth: []
+      summary: List all API keys
+      tags:
+      - api-keys
+    post:
+      consumes:
+      - application/json
+      description: Create a new API key with optional expiry date
+      parameters:
+      - description: API key creation details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateAPIKeyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.APIKeyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new API key
+      tags:
+      - api-keys
+  /api-keys/{id}:
+    delete:
+      description: Mark an API key as inactive
+      parameters:
+      - description: API Key ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+      security:
+      - BearerAuth: []
+      summary: Revoke an API key
+      tags:
+      - api-keys
+  /devices:
+    get:
+      description: Get a list of all devices registered for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DeviceListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+      security:
+      - BearerAuth: []
+      summary: List all devices
+      tags:
+      - devices
+    post:
+      consumes:
+      - application/json
+      description: Register a device to receive notifications
+      parameters:
+      - description: Device registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterDeviceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.DeviceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+      security:
+      - BearerAuth: []
+      summary: Register a new device
+      tags:
+      - devices
+  /devices/{id}:
+    delete:
+      description: Remove a device from the user's account
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+      security:
+      - BearerAuth: []
+      summary: Remove a device
+      tags:
+      - devices
+    patch:
+      consumes:
+      - application/json
+      description: Update device name or FCM token
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Device update details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateDeviceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DeviceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BadRequestResponse'
+      security:
+      - BearerAuth: []
+      summary: Update device information
+      tags:
+      - devices
   /notify/call:
     post:
       consumes:
       - application/json
       description: Send a Firebase Cloud Messaging notification to trigger a call
+        on all registered devices
       parameters:
       - default: Bearer your-api-key-here
         description: Bearer token (API Key)
@@ -81,53 +406,27 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/notify.CallRequest'
+          $ref: '#/definitions/models.CallRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Called
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/handler.NotifyMultipleResponse'
         "400":
           description: Bad Request
           schema:
-            type: string
-        "403":
-          description: Forbidden
+            $ref: '#/definitions/models.BadRequestResponse'
+        "500":
+          description: Internal Server Error
           schema:
-            $ref: '#/definitions/notify.ErrorResponse'
+            $ref: '#/definitions/models.NotifyErrorResponse'
       security:
       - BearerAuth: []
       summary: Send FCM notification call
       tags:
       - notify
-  /user/create:
-    post:
-      consumes:
-      - application/json
-      description: Create a new user with FCM token and get API key
-      parameters:
-      - description: User creation request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/user.CreateUserRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/user.CreateUserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-      summary: Create a new user
-      tags:
-      - user
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.

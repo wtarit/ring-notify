@@ -3,8 +3,8 @@ package main
 import (
 	"api/configs"
 	"api/models"
-	"api/notify"
-	"api/user"
+	"api/router"
+	"api/util"
 	"log"
 	"net/http"
 	"os"
@@ -12,10 +12,19 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	_ "api/docs" // This line is necessary for go-swagger to find your docs!
 )
+
+type CustomValidator struct {
+	Validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.Validator.Struct(i)
+}
 
 //	@title			Ring Notify API
 //	@version		0.0.1
@@ -33,16 +42,25 @@ func main() {
 
 	configs.InitFirebase()
 	configs.InitDatabase()
+	if err := configs.InitSupabase(); err != nil {
+		log.Fatalf("Failed to initialize Supabase: %v", err)
+	}
 
 	e := echo.New()
-	e.Validator = &user.CustomValidator{Validator: validator.New()}
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:5173", "https://ringnotify.wtarit.me"},
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPatch, http.MethodDelete, http.MethodOptions},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "X-API-Key"},
+	}))
+	e.Validator = &CustomValidator{Validator: validator.New()}
+	e.Binder = &util.CustomBinder{}
 
 	e.GET("/", healthCheck)
-	e.POST("/notify/call", notify.Call)
-	e.POST("/user/create", user.CreateUser)
 
 	// Swagger endpoint
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
+
+	router.InitRoute(e)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
